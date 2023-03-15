@@ -64,6 +64,8 @@ namespace WPF
                 new Gameboard(gameConfig.Lines, gameConfig.Columns),
                 new Gameboard(gameConfig.Lines, gameConfig.Columns), "player2");
 
+
+
         }
     }
 }
