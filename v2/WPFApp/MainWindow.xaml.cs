@@ -24,7 +24,7 @@ namespace WPFApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private GameConfig GameConfig { get; set; }  
+        private GameConfig GameConfig { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -47,6 +47,7 @@ namespace WPFApp
                     BoatGridView.ItemsSource = GameConfig.Boats;
 
                     SecondScreenGrid.Children.Add(Gameboard);
+
                     Grid.SetRow(Gameboard, 1);
                     Grid.SetColumn(Gameboard, 1);
                     Grid.SetRowSpan(Gameboard, int.MaxValue);
@@ -63,6 +64,7 @@ namespace WPFApp
         {
             // grid definition
             var grid = new Grid();
+
             for (int i = 0; i < numRows; i++)
             {
                 grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50, GridUnitType.Pixel) });
@@ -93,7 +95,7 @@ namespace WPFApp
                 rowHeader.TextAlignment = TextAlignment.Center;
                 rowHeader.FontWeight = FontWeights.Bold;
                 rowHeader.Margin = new Thickness(0, 0, 10, 0);
-                rowHeader.VerticalAlignment= VerticalAlignment.Center;
+                rowHeader.VerticalAlignment = VerticalAlignment.Center;
                 Grid.SetRow(rowHeader, i + 1);
                 Grid.SetColumn(rowHeader, 0);
                 grid.Children.Add(rowHeader);
@@ -107,12 +109,33 @@ namespace WPFApp
                     Button button = new Button();
                     button.Content = "";
                     button.Background = new SolidColorBrush(Colors.LightBlue);
+                    button.Click += GridButton_Click;
                     Grid.SetRow(button, i);
                     Grid.SetColumn(button, j);
                     grid.Children.Add(button);
                 }
             }
+            grid.Name = "grid";
             return grid;
+        }
+
+        private void GridButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            Grid parentGrid = FindParentGrid(clickedButton);
+            int row = Grid.GetRow(clickedButton);
+            int col = Grid.GetColumn(clickedButton);
+            MessageBox.Show("The clicked button is in row " + row + " and column " + col + ".");
+        }
+
+        private Grid FindParentGrid(DependencyObject child)
+        {
+            DependencyObject parent = VisualTreeHelper.GetParent(child);
+            while (parent != null && !(parent is Grid && ((Grid)parent).Name == "grid"))
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+            }
+            return (Grid)parent;
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -130,6 +153,6 @@ namespace WPFApp
         {
             MainScreenGrid.Visibility = Visibility.Collapsed;
             SecondScreenGrid.Visibility = Visibility.Visible;
-        }       
+        }
     }
 }
