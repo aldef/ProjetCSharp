@@ -24,62 +24,15 @@ namespace WPFApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private GameConfig GameConfig { get; set; }
         public MainWindow()
         {
             InitializeComponent();
-            InitGame();
+            MainGrid.Children.Add(MainFrame);
+            MainFrame.NavigationUIVisibility = NavigationUIVisibility.Hidden;
+            MainFrame.Navigate(new Uri("Pages/OpenPage.xaml", UriKind.Relative));
         }
 
-        private async void InitGame()
-        {
-            try
-            {
-                string configString = await ApiRepo.GetDataAsync();
-                GameConfig = JsonConvert.DeserializeObject<GameConfig>(configString);
-                if (GameConfig == null)
-                {
-                    MessageBox.Show("API NULL");
-                }
-                else
-                {
-                    Grid gameboardModel = ControlsHelper.CreateGrid(GameConfig.Lines + 1, GameConfig.Columns + 1);
-                    
-                    BoatGridView.ItemsSource = GameConfig.Boats;
-
-                    SecondScreenGrid.Children.Add(gameboardModel);
-                    Grid.SetRow(gameboardModel, 0);
-                    Grid.SetColumn(gameboardModel, 0);
-                    Grid.SetRowSpan(gameboardModel, 2);
-                    Grid.SetColumnSpan(gameboardModel, 2);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while getting data from the API: " + ex.Message);
-            }
-        }
-
-        private void Exit_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Application.Current.Shutdown();
-        }
-
-        private void Start_Click(object sender, RoutedEventArgs e)
-        {
-            MainScreenGrid.Visibility = Visibility.Visible;
-            SecondScreenGrid.Visibility = Visibility.Collapsed;
-        }
-
-        private void playButton_Click(object sender, RoutedEventArgs e)
-        {
-            MainScreenGrid.Visibility = Visibility.Collapsed;
-            SecondScreenGrid.Visibility = Visibility.Visible;
-        }
-
-        private void Start_Click_1(object sender, RoutedEventArgs e)
-        {
-
-        }
+        public Frame MainFrame { get; } = new Frame();
     }
 }
+
