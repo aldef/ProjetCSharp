@@ -69,15 +69,23 @@
                 </MenuItem>
             </Menu>
 
-            <ListView x:Name="BoatGridView" Grid.Column="2" Grid.Row="1" Height="135" Width="310" 
+            <StackPanel Grid.Column="1" Grid.Row="0" Margin="25">
+                <ListView x:Name="BoatGridView"  Height="135" Width="310" Margin="25" 
                       HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Available boats"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Available boats"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <Button x:Name="Start" Height="30" Width="100" Content="kys" Margin="20" Click="Start_Click_1"/>
+            </StackPanel>
             
+
+
+
+
         </Grid>
         
         
