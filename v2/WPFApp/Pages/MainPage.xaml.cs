@@ -26,43 +26,35 @@ namespace WPFApp
     public partial class MainPage : Page
     {
         private GameConfig GameConfig { get; set; }
-        public Player playerOne { get; set; }
-        public Player playerTwo { get; set; }
+        public Player PlayerOne { get; set; }
+        public Player PlayerTwo { get; set; }
 
         public MainPage()
         {
             InitializeComponent();
-            InitGame();
+            Loaded += MainPage_Loaded;
+            playerOneNameLabel.Content = PlayerOne != null ? PlayerOne.name : "";
+
+
         }
 
-        private async void InitGame()
+        private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            if (mainWindow != null)
             {
-                string configString = await ApiRepo.GetDataAsync();
-                GameConfig = JsonConvert.DeserializeObject<GameConfig>(configString);
-                if (GameConfig == null)
-                {
-                    MessageBox.Show("API NULL");
-                }
-                else
-                {
-                    Grid gameboardModel = ControlsHelper.CreateGrid(GameConfig.Lines + 1, GameConfig.Columns + 1);
+                GameConfig = mainWindow.GameConfig;
 
-                    BoatGridView.ItemsSource = GameConfig.Boats;
-
-                    MainGrid.Children.Add(gameboardModel);
-                    Grid.SetRow(gameboardModel, 0);
-                    Grid.SetColumn(gameboardModel, 0);
-                    Grid.SetRowSpan(gameboardModel, 2);
-                    Grid.SetColumnSpan(gameboardModel, 2);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while getting data from the API: " + ex.Message);
+                Grid gameboardModel = ControlsHelper.CreateGrid(GameConfig.Lines + 1, GameConfig.Columns + 1);
+                BoatGridView.ItemsSource = GameConfig.Boats;
+                MainGrid.Children.Add(gameboardModel);
+                Grid.SetRow(gameboardModel, 0);
+                Grid.SetColumn(gameboardModel, 0);
+                Grid.SetRowSpan(gameboardModel, 2);
+                Grid.SetColumnSpan(gameboardModel, 2);
             }
         }
+
 
         private void StartGameButton_Click(object sender, RoutedEventArgs e)
         {
@@ -74,7 +66,7 @@ namespace WPFApp
             var mainWindow = Window.GetWindow(this) as MainWindow;
             if (mainWindow != null)
             {
-                var initPlayerPage = new InitPlayerPage(playerOne, GameConfig);
+                var initPlayerPage = new InitPlayerPage(PlayerOne, GameConfig);
                 mainWindow.MainFrame.Navigate(initPlayerPage);
             }
         }
@@ -84,7 +76,7 @@ namespace WPFApp
             var mainWindow = Window.GetWindow(this) as MainWindow;
             if (mainWindow != null)
             {
-                var initPlayerPage = new InitPlayerPage(playerTwo, GameConfig);
+                var initPlayerPage = new InitPlayerPage(PlayerTwo, GameConfig);
                 mainWindow.MainFrame.Navigate(initPlayerPage);
             }
         }
