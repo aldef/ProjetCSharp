@@ -8,6 +8,8 @@ namespace GameLogic.Models
         public Gameboard noteBoard { get; set; }
         public string name { get; set; }
 
+
+        public Player() {  }
         public Player(List<Boat> boatListModel, Gameboard playerBoard,Gameboard noteBoard, string name)
         {
             boats = boatListModel;

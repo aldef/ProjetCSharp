@@ -34,15 +34,22 @@
                 <Button x:Name="StartGameButton" Height="30" Width="120" Content="Start a new game" Margin="20" 
                         Click="StartGameButton_Click"/>
 
-                <Button x:Name="InitPlayerOneButton" Height="30" Width="120" Content="Start a new game" Margin="20" 
+                <Button x:Name="InitPlayerOneButton" Height="30" Width="120" Content="Player 1" Margin="20" 
                         Click="InitPlayerOneButton_Click"/>
 
-                <Button x:Name="InitPlayerTwoButton" Height="30" Width="120" Content="Start a new game" Margin="20" 
+            <Label x:Name="PlayerOneName" Height="25" Width="Auto" VerticalAlignment="Top" 
+                   HorizontalAlignment="Center"/>
+
+            <Button x:Name="InitPlayerTwoButton" Height="30" Width="120" Content="Player 2" Margin="20" 
                         Click="InitPlayerTwoButton_Click"/>
+
+            <Label x:Name="playerOneNameLabel" Height="25" Width="Auto" VerticalAlignment="Top" 
+                   HorizontalAlignment="Center"/>
         </StackPanel>
 
-        <Label x:Name="playerOneNameLabel" Height="25" Width="Auto" Grid.Column="2"  Grid.Row="0" 
-               VerticalAlignment="Top" HorizontalAlignment="Right"/>
 
+
+
+            
     </Grid>              
 </Page>

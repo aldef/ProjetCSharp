@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,61 +22,85 @@ namespace WPFApp.Pages
     /// </summary>
     public partial class InitPlayerPage : Page
     {
-        private Player player = null;
         private GameConfig gameConfig = null;
         private Gameboard playerGameboard = null;
-        public InitPlayerPage(Player player, GameConfig gameConfig)
+        private Grid gameboardModelGrid = null;
+        private List<Boat> playerBoats = null;
+        private bool player;
+        public InitPlayerPage(bool player, GameConfig gameConfig)
         {
             InitializeComponent();
             this.player = player;
             this.gameConfig = gameConfig;
-            test();
+            Init();
         }
 
-        private void returnButton_Click(object sender, RoutedEventArgs e)
+        private void finishButton_Click(object sender, RoutedEventArgs e)
         {
+            if (playerBoats.Any(boat => !boat.isPlaced)) 
+            {
+                MessageBox.Show("You must place all boats to keep going");
+                return; 
+            }
+
             var mainWindow = Window.GetWindow(this) as MainWindow;
             if (mainWindow != null)
             {
-                mainWindow.MainFrame.Navigate(new Uri("Pages/MainPage.xaml", UriKind.Relative));
+                if (player)
+                {
+                    mainWindow.PlayerOne.playerBoard = playerGameboard;
+                    mainWindow.PlayerOne.noteBoard = new Gameboard(gameConfig.Lines, gameConfig.Columns);
+                    mainWindow.PlayerOne.boats = playerBoats;
+                    mainWindow.PlayerOne.name = playerNameTextBox.Text == "" ? "Player 1" : playerNameTextBox.Text;
+
+                    mainWindow.MainFrame.Navigate(new Uri("Pages/MainPage.xaml", UriKind.Relative));
+                }
+                else 
+                {
+                    mainWindow.PlayerTwo.playerBoard = playerGameboard;
+                    mainWindow.PlayerTwo.noteBoard = new Gameboard(gameConfig.Lines, gameConfig.Columns);
+                    mainWindow.PlayerTwo.boats = playerBoats;
+                    mainWindow.PlayerTwo.name = playerNameTextBox.Text == "" ? "Player 2" : playerNameTextBox.Text;
+
+                    mainWindow.MainFrame.Navigate(new Uri("Pages/MainPage.xaml", UriKind.Relative));
+                }
             }
         }
 
-        private void test() 
+        private void Init() 
         {
+            gameboardModelGrid = ControlsHelper.CreateGrid(gameConfig.Lines + 1, gameConfig.Columns + 1);
+            playerBoats = Helper.DuplicateBoatList(gameConfig.Boats.Where(boat => !boat.isPlaced).ToList());
 
-            Grid gameboardModel = ControlsHelper.CreateGrid(gameConfig.Lines + 1, gameConfig.Columns + 1);
-
-            foreach (var child in gameboardModel.Children)
+            foreach (var child in gameboardModelGrid.Children)
             {
                 if (child is Button button)
                 {
                     button.Click += GridButton_Click;
                     button.MouseRightButtonDown += GridButton_MouseRightButtonDown;
-
                 }
             }
 
             playerGameboard = new Gameboard(gameConfig.Lines, gameConfig.Columns);
             // bind datasource
-            BoatGridView.ItemsSource = gameConfig.Boats.Where(boat => !boat.isPlaced).ToList();
-            MainGrid.Children.Add(gameboardModel);
-            Grid.SetRow(gameboardModel, 0);
-            Grid.SetColumn(gameboardModel, 0);
-            Grid.SetRowSpan(gameboardModel, 2);
-            Grid.SetColumnSpan(gameboardModel, 2);
+            BoatListView.ItemsSource = playerBoats.Where(boat => !boat.isPlaced).ToList();
+            MainGrid.Children.Add(gameboardModelGrid);
+            Grid.SetRow(gameboardModelGrid, 0);
+            Grid.SetColumn(gameboardModelGrid, 0);
+            Grid.SetRowSpan(gameboardModelGrid, 2);
+            Grid.SetColumnSpan(gameboardModelGrid, 2);
         }
 
         private void placeBoatButton_Click(object sender, RoutedEventArgs e)
         {
-            if ((BoatGridView.SelectedItem == null) || (startPositionLabel.Content == "") ||
+            if ((BoatListView.SelectedItem == null) || (startPositionLabel.Content == "") ||
                 (endPositionLabel.Content == "")) { return; }
 
             string startStr = (string)startPositionLabel.Content;
             string startRowStr = startStr.Substring(0, 1);
             string startColStr = startStr.Substring(1);
             int.TryParse(startColStr, out int startCol);
-            char.TryParse(startRowStr.ToUpper(), out char startLine);    
+            char.TryParse(startRowStr.ToUpper(), out char startLine);
             int startY = startCol;
             int startX = (int)startLine - (int)'A' + 1;
             Coordinate startPos = new Coordinate(startX - 1, startY - 1);
@@ -87,22 +112,21 @@ namespace WPFApp.Pages
             char.TryParse(endRowStr.ToUpper(), out char endLine);
             int endY = endCol;
             int endX = (int)endLine - (int)'A' + 1;
-            Coordinate endPos = new Coordinate(endX -1, endY -1);
+            Coordinate endPos = new Coordinate(endX - 1, endY - 1);
 
-            Boat selectedBoat = (Boat)BoatGridView.SelectedItem;
+            Boat selectedBoat = (Boat)BoatListView.SelectedItem;
 
             if (playerGameboard.PlaceBoat(selectedBoat, startPos, endPos))
             {
-                // remove the boat from unplaced ones + rebind datasource
-                selectedBoat.isPlaced= true;
-                BoatGridView.ItemsSource = gameConfig.Boats.Where(boat => !boat.isPlaced).ToList();
+                // remove the boat from unplaced ones + rebind datasource + refresh grid
+                selectedBoat.isPlaced = true;
+                BoatListView.ItemsSource = playerBoats.Where(boat => !boat.isPlaced).ToList();
+                ControlsHelper.RefreshGrid(gameboardModelGrid, playerGameboard);
             }
-            else 
+            else
             {
                 MessageBox.Show("This boat doesnt fit here !");
             }
-
-
         }
 
         private void GridButton_Click(object sender, RoutedEventArgs e)
@@ -120,12 +144,5 @@ namespace WPFApp.Pages
             int col = Grid.GetColumn(clickedButton);
             endPositionLabel.Content = $"{(char)('A' + row - 1)}{col}";
         }
-
-
-        //private void CreatePlayer() 
-        //{
-        //    player = new Player();
-        //}
-
     }
 }

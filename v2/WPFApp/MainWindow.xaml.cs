@@ -26,10 +26,14 @@ namespace WPFApp
     public partial class MainWindow : Window
     {
         public GameConfig GameConfig { get; set; }
+        public Player PlayerOne { get; set; }
+        public Player PlayerTwo { get; set; }
         public MainWindow()
         {
             InitializeComponent();
             InitAsync();
+            PlayerOne = new Player();
+            PlayerTwo = new Player();
         }
 
         private async void InitAsync()

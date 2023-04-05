@@ -25,17 +25,25 @@ namespace WPFApp
     /// </summary>
     public partial class MainPage : Page
     {
-        private GameConfig GameConfig { get; set; }
-        public Player PlayerOne { get; set; }
-        public Player PlayerTwo { get; set; }
+        private GameConfig gameConfig { get; set; }
+        private Player playerOne { get; set; }
+        private Player playerTwo { get; set; }
 
         public MainPage()
         {
             InitializeComponent();
             Loaded += MainPage_Loaded;
-            playerOneNameLabel.Content = PlayerOne != null ? PlayerOne.name : "";
 
+        }
 
+        private void GetPlayers() 
+        {
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            if (mainWindow != null)
+            {
+                this.playerOne = mainWindow.PlayerOne;
+                this.playerTwo = mainWindow.PlayerTwo;
+            }
         }
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -43,18 +51,19 @@ namespace WPFApp
             var mainWindow = Window.GetWindow(this) as MainWindow;
             if (mainWindow != null)
             {
-                GameConfig = mainWindow.GameConfig;
+                gameConfig = mainWindow.GameConfig;
 
-                Grid gameboardModel = ControlsHelper.CreateGrid(GameConfig.Lines + 1, GameConfig.Columns + 1);
-                BoatGridView.ItemsSource = GameConfig.Boats;
+                Grid gameboardModel = ControlsHelper.CreateGrid(gameConfig.Lines + 1, gameConfig.Columns + 1);
+                BoatGridView.ItemsSource = gameConfig.Boats;
                 MainGrid.Children.Add(gameboardModel);
                 Grid.SetRow(gameboardModel, 0);
                 Grid.SetColumn(gameboardModel, 0);
                 Grid.SetRowSpan(gameboardModel, 2);
                 Grid.SetColumnSpan(gameboardModel, 2);
             }
+            GetPlayers();
+            playerOneNameLabel.Content = playerOne != null ? playerOne.name : "";
         }
-
 
         private void StartGameButton_Click(object sender, RoutedEventArgs e)
         {
@@ -66,7 +75,7 @@ namespace WPFApp
             var mainWindow = Window.GetWindow(this) as MainWindow;
             if (mainWindow != null)
             {
-                var initPlayerPage = new InitPlayerPage(PlayerOne, GameConfig);
+                var initPlayerPage = new InitPlayerPage(true, gameConfig);
                 mainWindow.MainFrame.Navigate(initPlayerPage);
             }
         }
@@ -76,7 +85,7 @@ namespace WPFApp
             var mainWindow = Window.GetWindow(this) as MainWindow;
             if (mainWindow != null)
             {
-                var initPlayerPage = new InitPlayerPage(PlayerTwo, GameConfig);
+                var initPlayerPage = new InitPlayerPage(false, gameConfig);
                 mainWindow.MainFrame.Navigate(initPlayerPage);
             }
         }
