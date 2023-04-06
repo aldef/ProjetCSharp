@@ -41,8 +41,8 @@ namespace WPFApp
             var mainWindow = Window.GetWindow(this) as MainWindow;
             if (mainWindow != null)
             {
-                this.playerOne = mainWindow.PlayerOne;
-                this.playerTwo = mainWindow.PlayerTwo;
+                playerOne = mainWindow.PlayerOne;
+                playerTwo = mainWindow.PlayerTwo;
             }
         }
 
@@ -52,7 +52,7 @@ namespace WPFApp
             if (mainWindow != null)
             {
                 gameConfig = mainWindow.GameConfig;
-
+                
                 Grid gameboardModel = ControlsHelper.CreateGrid(gameConfig.Lines + 1, gameConfig.Columns + 1);
                 BoatGridView.ItemsSource = gameConfig.Boats;
                 MainGrid.Children.Add(gameboardModel);
@@ -67,7 +67,28 @@ namespace WPFApp
 
         private void StartGameButton_Click(object sender, RoutedEventArgs e)
         {
+            //// check if both players are ready
+            //if ((playerOne.boats == null) || (playerTwo.boats == null)) 
+            //{
+            //    MessageBox.Show("Both players need to have put down all of their boats in order to start a game");
+            //    return;
+            //}
+            //if ((playerOne.boats.Any(boat => !boat.isPlaced)) && (playerTwo.boats.Any(boat => !boat.isPlaced)))
+            //{
+            //    MessageBox.Show("Both players need to have put down all of their boats in order to start a game");
+            //    return;
+            //}
 
+            // Create a new instance of BattleWindow
+            BattleWindow battleWindow = new BattleWindow(playerOne, playerTwo);
+
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            if (mainWindow != null)
+            {
+                mainWindow.Visibility = Visibility.Collapsed; 
+            }
+
+            battleWindow.Show();
         }
 
         private void InitPlayerOneButton_Click(object sender, RoutedEventArgs e)

@@ -121,7 +121,26 @@ namespace WPFApp
                 for (int j = 1; j < numCols; j++)
                 {
                     Button button = new Button();
-                    button.Background = gameboard.matrix[i - 1, j - 1] == 1 ? new SolidColorBrush(Colors.Brown) : new SolidColorBrush(Colors.LightBlue);
+                    if (gameboard.matrix[i - 1, j - 1] == '0') // water
+                    {
+                        button.Background = new SolidColorBrush(Colors.LightBlue);
+                        button.Content = "";
+                    }
+                    else if (gameboard.matrix[i - 1, j - 1] == '1') // boat
+                    {
+                        button.Background = new SolidColorBrush(Colors.DarkGray);
+                        button.Content = "";
+                    }
+                    else if (gameboard.matrix[i - 1, j - 1] == 'X') // hit
+                    {
+                        button.Background = new SolidColorBrush(Colors.Red);
+                        button.Content = "";
+                    }
+                    else if (gameboard.matrix[i - 1, j - 1] == 'M') // miss 
+                    {
+                        button.Background = new SolidColorBrush(Colors.Green); 
+                        button.Content = "";
+                    }
                     Grid.SetRow(button, i);
                     Grid.SetColumn(button, j);
                     grid.Children.Add(button);
@@ -164,29 +183,33 @@ namespace WPFApp
             {
                 for (int j = 1; j < numCols; j++)
                 {
-                    Button button = (Button)grid.Children.Cast<UIElement>().FirstOrDefault(e => Grid.GetRow(e) == i && Grid.GetColumn(e) == j);
+                    Button button = (Button)grid.Children.Cast<UIElement>()
+                        .FirstOrDefault(e => Grid.GetRow(e) == i && Grid.GetColumn(e) == j);
                     if (button != null)
                     {
-                        if (gameboard.matrix[i - 1, j - 1] == '0')
+                        if (gameboard.matrix[i - 1, j - 1] == '0') // water
                         {
                             button.Background = new SolidColorBrush(Colors.LightBlue);
                             button.Content = "";
                         }
-                        else if (gameboard.matrix[i - 1, j - 1] == '1')
+                        else if (gameboard.matrix[i - 1, j - 1] == '1') // boat
                         {
                             button.Background = new SolidColorBrush(Colors.DarkGray);
                             button.Content = "";
                         }
-                        else if (gameboard.matrix[i - 1, j - 1] == 'X')
+                        else if (gameboard.matrix[i - 1, j - 1] == 'X') // hit
                         {
                             button.Background = new SolidColorBrush(Colors.Red);
+                            button.Content = "";
+                        }
+                        else if (gameboard.matrix[i - 1, j - 1] == 'M') // miss
+                        {
+                            button.Background = new SolidColorBrush(Colors.Green);
                             button.Content = "";
                         }
                     }
                 }
             }
         }
-
-
     }
 }

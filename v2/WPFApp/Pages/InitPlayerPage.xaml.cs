@@ -33,6 +33,10 @@ namespace WPFApp.Pages
             this.player = player;
             this.gameConfig = gameConfig;
             Init();
+
+            // a supprimer
+            playerBoats.RemoveRange(0, 4);
+
         }
 
         private void finishButton_Click(object sender, RoutedEventArgs e)
@@ -66,12 +70,12 @@ namespace WPFApp.Pages
                 }
             }
         }
-
-        private void Init() 
+        private void Init()
         {
             gameboardModelGrid = ControlsHelper.CreateGrid(gameConfig.Lines + 1, gameConfig.Columns + 1);
             playerBoats = Helper.DuplicateBoatList(gameConfig.Boats.Where(boat => !boat.isPlaced).ToList());
 
+            // add right / left click event to allow boats to be placed
             foreach (var child in gameboardModelGrid.Children)
             {
                 if (child is Button button)
